@@ -1,0 +1,21 @@
+name = "tang-edge"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+[[kv_namespaces]]
+binding = "TANG_KEYS"
+id = "<YOUR_KV_NAMESPACE_ID>"
+preview_id = "<YOUR_KV_PREVIEW_ID>"
+
+[placement]
+mode = "smart"
+
+[triggers]
+crons = ["0 0 1 * *"]  # Auto-rotate keys monthly
+
+[[routes]]
+pattern = "<YOUR_DOMAIN>"
+custom_domain = true
+
+[vars]
+# ROTATE_TOKEN = set via `wrangler secret put ROTATE_TOKEN`

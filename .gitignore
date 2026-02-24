@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+.wrangler/
+.dev.vars
+.rotate-token
+.tang-platform
+local.settings.json
+*.log

@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules",
+    "tests",
+    "src/platforms",
+    "src/storage/adapters/deno-kv.ts",
+    "src/storage/adapters/firestore.ts",
+    "src/storage/adapters/netlify-blobs.ts",
+    "src/storage/adapters/azure-tables.ts",
+    "src/storage/adapters/dynamodb.ts",
+    "src/storage/adapters/vercel-kv.ts",
+    "src/storage/adapters/file-system.ts",
+    "src/storage/adapters/supabase.ts"
+  ]
+}
