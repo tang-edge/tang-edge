@@ -1,10 +1,31 @@
 # Cloudflare Workers
 
+## Prerequisites
+
+- **Node.js >= 20** — required by wrangler v4
+- **Bun** — auto-installed by `setup.sh`, or [install manually](https://bun.sh/)
+- **Cloudflare account** — free tier is enough
+
+## Authentication
+
+**Option A** — browser OAuth (interactive):
+
+```bash
+wrangler login
+```
+
+**Option B** — API token (CI / headless):
+
+```bash
+export CLOUDFLARE_API_TOKEN="your-token"
+```
+
+Create token: [Cloudflare Dashboard → API Tokens](https://dash.cloudflare.com/profile/api-tokens) → template **"Edit Cloudflare Workers"**
+
 ## Deploy
 
 ```bash
 bun install
-wrangler login
 wrangler kv namespace create TANG_KEYS
 wrangler kv namespace create TANG_KEYS --preview
 ```
