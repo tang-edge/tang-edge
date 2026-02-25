@@ -147,7 +147,11 @@ clevis luks bind -d /dev/sdX tang '{"url": "https://tang.corp.example.com"}'
 (ip.src ne VPN_IP_1 and ip.src ne VPN_IP_2) → Block
 ```
 
-**Best for**: corporate fleets, developer laptops, remote workers — auto-unlock on VPN, locked everywhere else.
+**Requires wired ethernet at boot.** Network-bound disk encryption runs in initramfs before the OS starts — WiFi drivers and WPA2/3 authentication are not available at that stage. At home a docking station or ethernet cable is required for auto-unlock. Without wired connection the disk stays locked until passphrase fallback is entered manually.
+
+**Note on home VPN**: VPN client starts after the OS is up, so it cannot be used for the initial disk unlock at boot. Auto-unlock at home requires wired ethernet directly on the home network — not VPN.
+
+**Best for**: corporate fleets with docking stations, developer laptops on wired home networks.
 
 ## Recommendations
 
