@@ -164,21 +164,7 @@ Rotate only when:
 - Admin with `ROTATE_TOKEN` access leaves (corporate deployment)
 - Decommissioning the tang-edge instance
 
-**If you do rotate**, do it while the disk is already unlocked (machine running), never after a reboot:
-
-```bash
-# 1. Rotate keys on the server
-curl -X POST -H "Authorization: Bearer $TOKEN" https://tang-edge.example.dev/rotate
-
-# 2. Immediately re-bind (disk is currently open — don't reboot before this)
-clevis luks bind -d /dev/sdX tang '{"url": "https://tang-edge.example.dev"}'
-
-# 3. Remove the old slot
-clevis luks unbind -d /dev/sdX -s <old_slot>
-
-# 4. Verify, then reboot
-clevis luks list -d /dev/sdX && reboot
-```
+**If you do rotate**: trigger `POST /rotate` while the disk is already unlocked, then immediately re-bind using `clevis luks bind` before rebooting. See [clevis documentation](https://github.com/latchset/clevis) for the re-binding procedure.
 
 The bigger operational risk is **key loss** (provider deletes your account), not key compromise. See Tang Key Backup below.
 
