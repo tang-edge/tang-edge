@@ -24,9 +24,13 @@ jobs:
           sha256sum tang-edge-${VERSION}.tar.gz > tang-edge-${VERSION}.tar.gz.sha256
 
       - name: Attest build provenance
+        id: attest
         uses: actions/attest-build-provenance@db473fddc028af60658334401dc6fa3ffd8669fd # v2.3.0
         with:
           subject-path: tang-edge-*.tar.gz
+
+      - name: Copy attestation bundle
+        run: cp "${{ steps.attest.outputs.bundle-path }}" tang-edge-${GITHUB_REF_NAME}.tar.gz.sigstore.json
 
       - name: Create release and upload assets
         env:
@@ -36,6 +40,7 @@ jobs:
           gh release create ${VERSION} \
             tang-edge-${VERSION}.tar.gz \
             tang-edge-${VERSION}.tar.gz.sha256 \
+            tang-edge-${VERSION}.tar.gz.sigstore.json \
             --title "${VERSION}" \
             --generate-notes \
             --verify-tag
