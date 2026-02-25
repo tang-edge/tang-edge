@@ -6,7 +6,7 @@ PLATFORM_FILE=".tang-platform"
 install_bun() {
   if ! command -v bun &>/dev/null; then
     echo "Installing Bun..."
-    curl -fsSL https://bun.sh/install | bash
+    curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.4"
     export PATH="$HOME/.bun/bin:$PATH"
   fi
   echo "Installing dependencies..."
@@ -209,7 +209,7 @@ case "$choice" in
 
     if ! command -v deno &>/dev/null; then
       echo "Installing Deno..."
-      curl -fsSL https://deno.land/install.sh | sh
+      curl -fsSL https://deno.land/install.sh | sh -s "v2.2.3"
       export PATH="$HOME/.deno/bin:$PATH"
     fi
 
@@ -235,7 +235,7 @@ case "$choice" in
 
     if ! command -v vercel &>/dev/null; then
       echo "Installing Vercel CLI..."
-      npm i -g vercel
+      npm i -g vercel@44
     fi
 
     TOKEN=$(gen_token)
@@ -326,7 +326,7 @@ case "$choice" in
 
     if ! command -v netlify &>/dev/null; then
       echo "Installing Netlify CLI..."
-      npm i -g netlify-cli
+      npm i -g netlify-cli@20
     fi
 
     TOKEN=$(gen_token)
@@ -353,7 +353,7 @@ case "$choice" in
 
     if ! command -v func &>/dev/null; then
       echo "Installing Azure Functions Core Tools..."
-      npm i -g azure-functions-core-tools@4 --unsafe-perm true
+      npm i -g azure-functions-core-tools@4.0 --unsafe-perm true
     fi
 
     read -rp "Resource group [tang-edge-rg]: " rg
@@ -408,7 +408,7 @@ case "$choice" in
 
     if ! command -v supabase &>/dev/null; then
       echo "Installing Supabase CLI..."
-      npm i -g supabase
+      npm i -g supabase@2
     fi
 
     install_bun
