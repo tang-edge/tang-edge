@@ -98,6 +98,10 @@ do_update() {
       echo "Deploying to Supabase..."
       supabase functions deploy tang-edge --no-verify-jwt
       ;;
+    fastly)
+      echo "Deploying to Fastly Compute..."
+      fastly compute publish
+      ;;
     *)
       echo "Unknown platform: $platform"
       exit 1
@@ -149,8 +153,9 @@ echo "  5) GCP Cloud Functions"
 echo "  6) Netlify Functions"
 echo "  7) Azure Functions"
 echo "  8) Supabase Edge Functions"
+echo "  9) Fastly Compute"
 echo ""
-read -rp "Choose platform [1-8]: " choice
+read -rp "Choose platform [1-9]: " choice
 
 case "$choice" in
   1)
@@ -427,6 +432,31 @@ case "$choice" in
     save_token "$TOKEN"
 
     save_platform "supabase"
+    ;;
+
+  9)
+    echo ""
+    echo "--- Fastly Compute ---"
+
+    if ! command -v fastly &>/dev/null; then
+      echo "ERROR: Fastly CLI not found. Install: https://developer.fastly.com/reference/cli/"
+      exit 1
+    fi
+
+    install_bun
+
+    TOKEN=$(gen_token)
+    save_token "$TOKEN"
+    echo ""
+    echo "Steps:"
+    echo "  1. Create a KV Store named 'tang-keys' in the Fastly console"
+    echo "  2. Link the KV Store to your service"
+    echo "  3. Set ROTATE_TOKEN in Fastly Config Store (value in .rotate-token)"
+    echo "  4. Deploy: fastly compute publish"
+    echo ""
+    echo "Entry point: src/platforms/fastly.ts"
+
+    save_platform "fastly"
     ;;
 
   *)

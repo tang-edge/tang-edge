@@ -13,7 +13,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](tsconfig.json)
 [![Hono](https://img.shields.io/badge/Hono-E36002?logo=hono&logoColor=white)](https://hono.dev)
 [![Bun](https://img.shields.io/badge/Bun-black?logo=bun&logoColor=white)](https://bun.sh)
-[![Platforms](https://img.shields.io/badge/platforms-8-brightgreen)]()
+[![Platforms](https://img.shields.io/badge/platforms-9-brightgreen)]()
 
 Tang server for serverless/edge platforms. Deploy across multiple free providers and use `clevis sss` to distribute trust — no single provider can decrypt your disks.
 
@@ -50,6 +50,7 @@ The real power is **Split Trust**: deploy tang-edge to 2-3 different providers, 
 | Netlify Functions | Blobs | [Deploy](docs/netlify.md) |
 | Azure Functions | Table Storage | [Deploy + Front Door](docs/azure.md) |
 | Supabase Edge Functions | Postgres | [Deploy](docs/supabase.md) |
+| Fastly Compute | KV Store | [Deploy](docs/fastly.md) |
 
 > For VPS/Docker use the original [tang](https://github.com/latchset/tang) — it's simpler and runs natively.
 
@@ -125,7 +126,7 @@ src/
 │   ├── types.ts          # TypeScript types
 │   └── adapters/         # CloudflareKV, DenoKV, DynamoDB, Firestore,
 │                         # NetlifyBlobs, AzureTable, VercelKV,
-│                         # Supabase, FileSystem, Memory
+│                         # Supabase, FastlyKV, FileSystem, Memory
 └── platforms/            # Entry points per provider
     ├── deno.ts
     ├── aws-lambda.ts
@@ -134,6 +135,7 @@ src/
     ├── azure-functions.ts
     ├── vercel.ts
     ├── supabase.ts
+    ├── fastly.ts
     └── bun.ts
 ```
 
