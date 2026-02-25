@@ -12,7 +12,7 @@
 [![Hono](https://img.shields.io/badge/Hono-E36002?logo=hono&logoColor=white)](https://hono.dev)
 [![Bun](https://img.shields.io/badge/Bun-black?logo=bun&logoColor=white)](https://bun.sh)
 [![Platforms](https://img.shields.io/badge/platforms-8-brightgreen)]()
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12036/badge)](https://www.bestpractices.dev/projects/12036)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12036/badge?level=silver)](https://www.bestpractices.dev/projects/12036)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/tang-edge/tang-edge/badge)](https://scorecard.dev/viewer/?uri=github.com/tang-edge/tang-edge)
 
 Tang server for serverless/edge platforms. Deploy across multiple free providers and use `clevis sss` to distribute trust — no single provider can decrypt your disks.
