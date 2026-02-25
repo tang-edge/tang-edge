@@ -29,8 +29,11 @@ jobs:
         with:
           subject-path: tang-edge-*.tar.gz
 
-      - name: Copy attestation bundle
-        run: cp "${{ steps.attest.outputs.bundle-path }}" tang-edge-${GITHUB_REF_NAME}.tar.gz.sigstore.json
+      - name: Export attestation bundles
+        run: |
+          VERSION=${GITHUB_REF_NAME}
+          cp "${{ steps.attest.outputs.bundle-path }}" tang-edge-${VERSION}.tar.gz.sigstore.json
+          jq '.dsseEnvelope' "${{ steps.attest.outputs.bundle-path }}" > tang-edge-${VERSION}.tar.gz.intoto.jsonl
 
       - name: Create release and upload assets
         env:
@@ -41,6 +44,7 @@ jobs:
             tang-edge-${VERSION}.tar.gz \
             tang-edge-${VERSION}.tar.gz.sha256 \
             tang-edge-${VERSION}.tar.gz.sigstore.json \
+            tang-edge-${VERSION}.tar.gz.intoto.jsonl \
             --title "${VERSION}" \
             --generate-notes \
             --verify-tag
