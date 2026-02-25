@@ -1,0 +1,22 @@
+name: Fuzz
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 3 * * 3" # Weekly Wednesday 3am UTC
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: oven-sh/setup-bun@735343b667d3e6f658f44e0aa1b0a1180fd7a27c # v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      - name: Run fuzz targets
+        run: bun run tests/fuzz/run-fuzz.ts 50000
