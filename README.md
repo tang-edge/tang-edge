@@ -1,4 +1,6 @@
-# tang-edge
+<div align="center">
+<img src="docs/imgs/logo.png" width="200" alt="tang-edge">
+</div>
 
 [![CI](https://github.com/tang-edge/tang-edge/actions/workflows/ci.yml/badge.svg)](https://github.com/tang-edge/tang-edge/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/tang-edge/tang-edge/actions/workflows/codeql.yml/badge.svg)](https://github.com/tang-edge/tang-edge/actions/workflows/codeql.yml)
@@ -10,11 +12,7 @@
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12036/badge?level=silver)](https://www.bestpractices.dev/projects/12036)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/tang-edge/tang-edge/badge)](https://scorecard.dev/viewer/?uri=github.com/tang-edge/tang-edge)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL_3.0-blue.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](tsconfig.json)
-[![Hono](https://img.shields.io/badge/Hono-E36002?logo=hono&logoColor=white)](https://hono.dev)
-[![Bun](https://img.shields.io/badge/Bun-black?logo=bun&logoColor=white)](https://bun.sh)
 [![Platforms](https://img.shields.io/badge/platforms-9-brightgreen)]()
-[![Docker](https://img.shields.io/badge/ghcr.io-tang--edge-blue?logo=docker)](https://github.com/tang-edge/tang-edge/pkgs/container/tang-edge)
 
 Tang server for serverless/edge platforms. Deploy across multiple free providers and use `clevis sss` to distribute trust — no single provider can decrypt your disks.
 
