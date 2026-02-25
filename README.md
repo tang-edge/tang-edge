@@ -1,5 +1,6 @@
 <div align="center">
 <img src="docs/imgs/logo.png" width="200" alt="tang-edge">
+<h1>tang-edge</h1>
 </div>
 
 [![CI](https://github.com/tang-edge/tang-edge/actions/workflows/ci.yml/badge.svg)](https://github.com/tang-edge/tang-edge/actions/workflows/ci.yml)
