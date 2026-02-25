@@ -27,9 +27,14 @@ jobs:
         with:
           subject-path: tang-edge-*.tar.gz
 
-      - name: Upload release assets
+      - name: Create release and upload assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=${GITHUB_REF_NAME}
-          gh release upload ${VERSION} tang-edge-${VERSION}.tar.gz tang-edge-${VERSION}.tar.gz.sha256 --clobber
+          gh release create ${VERSION} \
+            tang-edge-${VERSION}.tar.gz \
+            tang-edge-${VERSION}.tar.gz.sha256 \
+            --title "${VERSION}" \
+            --generate-notes \
+            --verify-tag
