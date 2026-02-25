@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 import { base64urlEncode, base64urlDecode, base64urlToBigint, bigintToBase64url } from "../../src/crypto/jwk-utils";
 
 /**

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 import { ecmrExchange } from "../../src/crypto/ecmr";
 import { generateExchangeKey } from "../../src/crypto/keygen";
 import type { ECPublicJWK, ECPrivateJWK } from "../../src/storage/types";

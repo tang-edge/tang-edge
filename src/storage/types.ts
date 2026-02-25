@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 export interface ECPublicJWK {
   kty: "EC";
   crv: "P-521";

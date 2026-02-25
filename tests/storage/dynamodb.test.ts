@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 import { mock, beforeEach } from "bun:test";
 import { runAdapterTests } from "./adapter-shared";
 

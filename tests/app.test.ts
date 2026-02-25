@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 import { describe, it, expect, beforeEach } from "vitest";
 import { app } from "../src/index";
 import { MemoryStorage } from "../src/storage/adapters/memory";

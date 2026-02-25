@@ -43,6 +43,15 @@ All contributions must be signed off (`git commit -s`) to certify you have the r
 - [ ] Tests added/updated for new functionality
 - [ ] README updated if adding new platforms or features
 
+## Code Review
+
+All PRs are reviewed by the maintainer before merge. Reviews check:
+
+- Correctness: does the code do what it claims?
+- Security: no credential leaks, no injection vectors, safe crypto usage
+- Tests: new functionality has test coverage
+- Compatibility: no breaking changes to the Tang protocol or existing APIs
+
 ## Project Structure
 
 ```
