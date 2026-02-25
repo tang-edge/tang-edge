@@ -6,6 +6,9 @@ on:
   schedule:
     - cron: "0 3 * * 3" # Weekly Wednesday 3am UTC
 
+permissions:
+  contents: read
+
 jobs:
   fuzz:
     runs-on: ubuntu-latest
