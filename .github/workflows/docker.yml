@@ -64,3 +64,16 @@ jobs:
         with:
           sarif_file: trivy-results.sarif
           category: trivy
+
+      - uses: aquasecurity/trivy-action@e368e328979b113139d6f9068e03accaed98a518 # v0.34.1
+        with:
+          image-ref: ghcr.io/tang-edge/tang-edge@${{ steps.build.outputs.digest }}
+          format: spdx-json
+          output: sbom.spdx.json
+
+      - uses: actions/attest-sbom@07e74fc4e78d1aad915e867f9a094073a9f71527 # v4.0.0
+        with:
+          subject-name: ghcr.io/tang-edge/tang-edge
+          subject-digest: ${{ steps.build.outputs.digest }}
+          sbom-path: sbom.spdx.json
+          push-to-registry: true
