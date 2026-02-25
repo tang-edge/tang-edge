@@ -16,7 +16,7 @@ mock.module("@vercel/kv", () => ({
       store.delete(key);
     },
     scan: async (cursor: number, opts: { match: string; count: number }) => {
-      const prefix = opts.match.replace("*", "");
+      const prefix = opts.match.replace(/\*/g, "");
       const keys = Array.from(store.keys()).filter((k) => k.startsWith(prefix));
       return [0, keys];
     },
