@@ -17,6 +17,17 @@ bun run dev-server.ts # standalone (in-memory storage)
 bun test --watch      # tests in watch mode
 ```
 
+## Coding Standards
+
+- TypeScript strict mode (`strict: true` in tsconfig)
+- No `any` types — use proper typing
+- Tests required for all new functionality (`bun test`)
+- Type checking must pass (`bunx tsc --noEmit`)
+
+## Developer Certificate of Origin
+
+All contributions must be signed off (`git commit -s`) to certify you have the right to submit the work under the project's license. See [developercertificate.org](https://developercertificate.org).
+
 ## Pull Requests
 
 1. Fork the repo and create your branch from `main`
