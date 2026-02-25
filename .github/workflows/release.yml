@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create source archive
+        run: |
+          VERSION=${GITHUB_REF_NAME}
+          tar czf tang-edge-${VERSION}.tar.gz --exclude=.git --exclude=node_modules .
+          sha256sum tang-edge-${VERSION}.tar.gz > tang-edge-${VERSION}.tar.gz.sha256
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@db473fddc028af60658334401dc6fa3ffd8669fd # v2.3.0
+        with:
+          subject-path: tang-edge-*.tar.gz
+
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=${GITHUB_REF_NAME}
+          gh release upload ${VERSION} tang-edge-${VERSION}.tar.gz tang-edge-${VERSION}.tar.gz.sha256 --clobber
