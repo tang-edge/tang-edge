@@ -97,6 +97,38 @@ docker run --rm \
 
 Get token: Fastly console → Account → Personal API tokens.
 
+## Docker Compose
+
+Copy `docker-compose.yml` from the repo root, fill in your credentials, then:
+
+```bash
+# Deploy to Cloudflare
+docker compose run --rm cloudflare
+
+# Deploy to multiple platforms
+docker compose run --rm cloudflare
+docker compose run --rm deno
+```
+
+Or use a `.env` file for credentials (never commit it):
+
+```bash
+# .env
+CLOUDFLARE_API_TOKEN=your_token
+DENO_DEPLOY_TOKEN=your_token
+VERCEL_TOKEN=your_token
+VERCEL_ORG_ID=your_org
+VERCEL_PROJECT_ID=your_project
+NETLIFY_AUTH_TOKEN=your_token
+NETLIFY_SITE_ID=your_site
+SUPABASE_ACCESS_TOKEN=your_token
+FASTLY_API_TOKEN=your_token
+```
+
+```bash
+docker compose --env-file .env run --rm cloudflare
+```
+
 ## AWS Lambda / GCP Cloud Functions
 
 AWS SAM CLI and gcloud are not included in the image (too large).

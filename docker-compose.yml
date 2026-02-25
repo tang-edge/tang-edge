@@ -1,0 +1,55 @@
+# Tang-edge Docker Compose — deploy to any platform without installing CLIs locally.
+# Usage: docker compose run --rm cloudflare
+#
+# Fill in your credentials below (or use a .env file).
+# See docs/docker.md for full documentation.
+
+services:
+  cloudflare:
+    image: ghcr.io/tang-edge/tang-edge:latest
+    command: cloudflare
+    environment:
+      CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN}
+
+  deno:
+    image: ghcr.io/tang-edge/tang-edge:latest
+    command: deno
+    environment:
+      DENO_DEPLOY_TOKEN: ${DENO_DEPLOY_TOKEN}
+      DENO_PROJECT: ${DENO_PROJECT:-tang-edge}
+
+  vercel:
+    image: ghcr.io/tang-edge/tang-edge:latest
+    command: vercel
+    environment:
+      VERCEL_TOKEN: ${VERCEL_TOKEN}
+      VERCEL_ORG_ID: ${VERCEL_ORG_ID}
+      VERCEL_PROJECT_ID: ${VERCEL_PROJECT_ID}
+
+  netlify:
+    image: ghcr.io/tang-edge/tang-edge:latest
+    command: netlify
+    environment:
+      NETLIFY_AUTH_TOKEN: ${NETLIFY_AUTH_TOKEN}
+      NETLIFY_SITE_ID: ${NETLIFY_SITE_ID}
+
+  supabase:
+    image: ghcr.io/tang-edge/tang-edge:latest
+    command: supabase
+    environment:
+      SUPABASE_ACCESS_TOKEN: ${SUPABASE_ACCESS_TOKEN}
+
+  azure:
+    image: ghcr.io/tang-edge/tang-edge:latest
+    command: azure
+    environment:
+      AZURE_CLIENT_ID: ${AZURE_CLIENT_ID}
+      AZURE_CLIENT_SECRET: ${AZURE_CLIENT_SECRET}
+      AZURE_TENANT_ID: ${AZURE_TENANT_ID}
+      AZURE_FUNCTION_APP_NAME: ${AZURE_FUNCTION_APP_NAME}
+
+  fastly:
+    image: ghcr.io/tang-edge/tang-edge:latest
+    command: fastly
+    environment:
+      FASTLY_API_TOKEN: ${FASTLY_API_TOKEN}
