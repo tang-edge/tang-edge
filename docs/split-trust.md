@@ -117,6 +117,42 @@ clevis luks bind -d /dev/sdX sss '{
 
 With any setup above, encrypted disk images and LUKS partition dumps can be safely stored on any untrusted remote storage (S3, Backblaze B2, rsync.net, etc.). The backup is just encrypted data — decryption requires the Tang servers responding from the correct IP. Even if the backup storage is fully compromised, the data is unreadable without the Tang key shares.
 
+## Corporate Laptop + VPN
+
+tang-edge deployed on corporate infrastructure acts as a network-bound unlock factor for employee laptops. The VPN becomes the location boundary — no additional tang server needed at home.
+
+```
+Corporate laptop:
+  │
+  └─── tang-edge on corporate infra (WAF → VPN IP pool only)
+       + LUKS passphrase slot ──► fallback
+```
+
+```bash
+clevis luks bind -d /dev/sdX tang '{"url": "https://tang.corp.example.com"}'
+```
+
+| Scenario | Result |
+|----------|--------|
+| At office (corporate network) | tang responds → **auto-unlock** |
+| At home with VPN | VPN IP in allowed pool → tang responds → **auto-unlock** |
+| Laptop lost/stolen, no VPN | tang rejects → **locked** |
+| VPN credentials compromised (no laptop) | No LUKS header → **nothing to decrypt** |
+
+**Kill switch**: disable the tang-edge worker → all laptops lock on next reboot, no MDM required.
+
+**WAF rule** (Cloudflare example): restrict `/rec/*` to your VPN IP pool:
+
+```
+(ip.src ne VPN_IP_1 and ip.src ne VPN_IP_2) → Block
+```
+
+**Requires wired ethernet at boot.** Network-bound disk encryption runs in initramfs before the OS starts — WiFi drivers and WPA2/3 authentication are not available at that stage. At home a docking station or ethernet cable is required for auto-unlock. Without wired connection the disk stays locked until passphrase fallback is entered manually.
+
+**Note on home VPN**: VPN client starts after the OS is up, so it cannot be used for the initial disk unlock at boot. Auto-unlock at home requires wired ethernet directly on the home network — not VPN.
+
+**Best for**: corporate fleets with docking stations, developer laptops on wired home networks.
+
 ## Recommendations
 
 - **Always keep a LUKS passphrase slot** as ultimate fallback
