@@ -71,9 +71,10 @@ jobs:
           format: spdx-json
           output: sbom.spdx.json
 
-      - uses: actions/attest-sbom@07e74fc4e78d1aad915e867f9a094073a9f71527 # v4.0.0
+      - uses: actions/attest@c32b4b8b198b65d0bd9d63490e847ff7b53989d4 # v4.0.0
         with:
           subject-name: ghcr.io/tang-edge/tang-edge
           subject-digest: ${{ steps.build.outputs.digest }}
-          sbom-path: sbom.spdx.json
+          predicate-type: https://spdx.dev/Document
+          predicate-path: sbom.spdx.json
           push-to-registry: true
