@@ -19,7 +19,7 @@ jobs:
       - name: Create source archive
         run: |
           VERSION=${GITHUB_REF_NAME}
-          tar czf tang-edge-${VERSION}.tar.gz --exclude=.git --exclude=node_modules .
+          git archive --format=tar.gz --prefix=tang-edge-${VERSION}/ -o tang-edge-${VERSION}.tar.gz HEAD
           sha256sum tang-edge-${VERSION}.tar.gz > tang-edge-${VERSION}.tar.gz.sha256
 
       - name: Attest build provenance
