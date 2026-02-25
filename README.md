@@ -76,6 +76,55 @@ clevis luks bind -d /dev/sdX sss '{
 
 Kill switch: disable any one provider — disk stays locked on next reboot.
 
+### Production Example: 2-of-3 Multi-Provider + WAF
+
+Real-world setup with three independent Tang instances across different providers, WAF IP restriction, and password fallback:
+
+```
+VPS (Fixed IP: x.x.x.x)
+  │
+  ├─── tang-edge on Provider A (WAF → fixed IP only)
+  ├─── tang-edge on Provider B (WAF → fixed IP only)
+  ├─── tang (original) on a separate LAN machine
+  │
+  └─── clevis sss: t=2, any 2 of 3 ──► LUKS open
+       + LUKS passphrase slot         ──► fallback
+```
+
+```bash
+# 1. Bind with 2-of-3 threshold
+clevis luks bind -d /dev/sdX sss '{
+  "t": 2,
+  "pins": {
+    "tang": [
+      {"url": "http://192.168.1.10"},
+      {"url": "https://tang.provider-a.example.dev"},
+      {"url": "https://tang.provider-b.example.dev"}
+    ]
+  }
+}'
+
+# 2. Keep a LUKS passphrase slot as ultimate fallback
+# (in case all 3 Tang servers are unreachable)
+```
+
+**Why this works:**
+
+- **Fault tolerant** — any 1 server can go down, disk still unlocks
+- **WAF + Fixed IP** — cloud Tang servers only respond to the VPS IP; stolen server on a different network cannot reach them
+- **No single point of compromise** — different providers, different accounts, different infrastructure
+- **Password fallback** — if all 3 are down (practically impossible with independent providers), manual unlock
+
+| Scenario | Result |
+|----------|--------|
+| Server stolen (powered off) | Wrong IP → cloud servers reject → **locked** |
+| One cloud account compromised | 1 share, need 1 more + correct IP → **safe** |
+| Internet outage | Only local Tang = 1/3 → **password fallback** |
+| One provider down | Other cloud + local = 2/3 → **unlocks** |
+| Local Tang down | Cloud A + Cloud B = 2/3 → **unlocks** |
+
+> Use different cloud providers (e.g. Cloudflare + AWS, not two Cloudflare accounts) to avoid correlated outages.
+
 ### Single Server
 
 ```bash
