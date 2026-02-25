@@ -14,6 +14,7 @@
 [![Hono](https://img.shields.io/badge/Hono-E36002?logo=hono&logoColor=white)](https://hono.dev)
 [![Bun](https://img.shields.io/badge/Bun-black?logo=bun&logoColor=white)](https://bun.sh)
 [![Platforms](https://img.shields.io/badge/platforms-9-brightgreen)]()
+[![Docker](https://img.shields.io/badge/ghcr.io-tang--edge-blue?logo=docker)](https://github.com/tang-edge/tang-edge/pkgs/container/tang-edge)
 
 Tang server for serverless/edge platforms. Deploy across multiple free providers and use `clevis sss` to distribute trust — no single provider can decrypt your disks.
 
@@ -52,8 +53,6 @@ The real power is **Split Trust**: deploy tang-edge to 2-3 different providers, 
 | Supabase Edge Functions | Postgres | [Deploy](docs/supabase.md) |
 | Fastly Compute | KV Store | [Deploy](docs/fastly.md) |
 
-> For VPS/Docker use the original [tang](https://github.com/latchset/tang) — it's simpler and runs natively.
-
 ## Quick Start
 
 ```bash
@@ -61,6 +60,15 @@ bash setup.sh
 ```
 
 Interactive wizard: picks platform, installs deps, configures storage, deploys.
+
+**No local tools?** Deploy from Docker (wrangler, deployctl, vercel, netlify, supabase, fastly all included):
+
+```bash
+docker run --rm -e CLOUDFLARE_API_TOKEN=$TOKEN \
+  ghcr.io/tang-edge/tang-edge cloudflare
+```
+
+See [Docker Deploy](docs/docker.md) for all platforms.
 
 ## Split Trust (SSS)
 
@@ -103,7 +111,7 @@ clevis luks bind -d /dev/sdX tang '{"url":"https://tang-edge.example.workers.dev
 ```bash
 bun run dev           # wrangler dev (CF emulator)
 bun run dev-server.ts # standalone (in-memory storage)
-bun test              # 176 tests
+bun test              # 200 tests
 ```
 
 ## Architecture
