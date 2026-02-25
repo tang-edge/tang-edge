@@ -235,7 +235,7 @@ case "$choice" in
 
     if ! command -v vercel &>/dev/null; then
       echo "Installing Vercel CLI..."
-      npm i -g vercel@44
+      bun add -g vercel@44
     fi
 
     TOKEN=$(gen_token)
@@ -326,7 +326,7 @@ case "$choice" in
 
     if ! command -v netlify &>/dev/null; then
       echo "Installing Netlify CLI..."
-      npm i -g netlify-cli@20
+      bun add -g netlify-cli@20
     fi
 
     TOKEN=$(gen_token)
@@ -353,7 +353,7 @@ case "$choice" in
 
     if ! command -v func &>/dev/null; then
       echo "Installing Azure Functions Core Tools..."
-      npm i -g azure-functions-core-tools@4.0 --unsafe-perm true
+      bun add -g azure-functions-core-tools@4.0 --unsafe-perm true
     fi
 
     read -rp "Resource group [tang-edge-rg]: " rg
@@ -408,7 +408,7 @@ case "$choice" in
 
     if ! command -v supabase &>/dev/null; then
       echo "Installing Supabase CLI..."
-      npm i -g supabase@2
+      bun add -g supabase@2
     fi
 
     install_bun
