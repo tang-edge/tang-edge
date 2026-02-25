@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 import type { ECPublicJWK, TangJWK } from "../storage/types";
 
 // Supported thumbprint hash algorithms

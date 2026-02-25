@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 import type { TangStorage, TangStorageListResult } from "../interface";
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 

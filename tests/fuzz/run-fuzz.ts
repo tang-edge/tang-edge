@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 /**
  * Simple fuzz runner using random input generation.
  * Runs each fuzz target with random data for a fixed number of iterations.

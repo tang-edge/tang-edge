@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 import { describe, it, expect, beforeEach, spyOn } from "bun:test";
 import { MemoryStorage } from "../../src/storage/adapters/memory";
 import {

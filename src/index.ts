@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 import { Hono } from "hono";
 import type { Env } from "./storage/types";
 import { CloudflareKVStorage } from "./storage/adapters/cloudflare-kv";

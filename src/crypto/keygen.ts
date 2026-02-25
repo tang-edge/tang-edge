@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 import { p521 } from "@noble/curves/nist.js";
 import type { ECPrivateJWK } from "../storage/types";
 import { bigintToBase64url } from "./jwk-utils";

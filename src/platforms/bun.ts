@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 /**
  * Bun standalone server for tang-edge.
  * Uses FileSystemStorage for key persistence (compatible with original tang).

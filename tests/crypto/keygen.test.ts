@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 import { describe, it, expect } from "vitest";
 import { p521 } from "@noble/curves/nist.js";
 import { generateSigningKey, generateExchangeKey } from "../../src/crypto/keygen";

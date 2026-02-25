@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 import { readdir, readFile, writeFile, unlink } from "node:fs/promises";
 import { resolve, sep } from "node:path";
 import type { TangStorage, TangStorageListResult } from "../interface";

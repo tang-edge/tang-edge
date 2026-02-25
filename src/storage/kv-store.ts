@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// Copyright (c) tang-edge contributors
+
 import type { ECPrivateJWK, TangKeysInfo } from "./types";
 import type { TangStorage } from "./interface";
 import {
