@@ -8,8 +8,9 @@ ARG TARGETARCH
 ARG DENO_VERSION=v2.7.1
 ARG FASTLY_VERSION=v14.0.1
 
-# System deps
+# System deps (ca-certificates required for curl HTTPS downloads)
 RUN apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates \
       curl \
       unzip \
     && rm -rf /var/lib/apt/lists/*
@@ -41,8 +42,8 @@ RUN bun add -g \
       azure-functions-core-tools@4 \
       --unsafe-perm
 
-# Install deployctl (Deno Deploy CLI)
-RUN deno install -Arf jsr:@deno/deployctl
+# Install deployctl (Deno Deploy CLI; --global required in deno v2)
+RUN deno install --global -Arf jsr:@deno/deployctl
 
 WORKDIR /tang-edge
 
