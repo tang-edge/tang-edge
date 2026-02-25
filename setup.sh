@@ -5,9 +5,9 @@ PLATFORM_FILE=".tang-platform"
 
 install_bun() {
   if ! command -v bun &>/dev/null; then
-    echo "Installing Bun..."
-    curl -fsSL https://bun.sh/install | bash -s "bun-v1.2.4"
-    export PATH="$HOME/.bun/bin:$PATH"
+    echo "ERROR: Bun is required but not installed."
+    echo "  Install: https://bun.sh"
+    exit 1
   fi
   echo "Installing dependencies..."
   bun install
@@ -208,9 +208,9 @@ case "$choice" in
     echo "--- Deno Deploy ---"
 
     if ! command -v deno &>/dev/null; then
-      echo "Installing Deno..."
-      curl -fsSL https://deno.land/install.sh | sh -s "v2.2.3"
-      export PATH="$HOME/.deno/bin:$PATH"
+      echo "ERROR: Deno is required but not installed."
+      echo "  Install: https://deno.land"
+      exit 1
     fi
 
     install_bun
