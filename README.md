@@ -76,9 +76,11 @@ clevis luks bind -d /dev/sdX sss '{
 
 Kill switch: disable any one provider — disk stays locked on next reboot.
 
-### Production Example: 2-of-3 Multi-Provider + WAF
+### Production Examples
 
-Real-world setup with three independent Tang instances across different providers, WAF IP restriction, and password fallback:
+#### Homelab / On-Prem — 2 cloud + 1 LAN
+
+Local network has a dedicated Tang machine. Two cloud tang-edge instances add redundancy and kill-switch capability:
 
 ```
 VPS (Fixed IP: x.x.x.x)
@@ -124,6 +126,43 @@ clevis luks bind -d /dev/sdX sss '{
 | Local Tang down | Cloud A + Cloud B = 2/3 → **unlocks** |
 
 > Use different cloud providers (e.g. Cloudflare + AWS, not two Cloudflare accounts) to avoid correlated outages.
+
+#### VPS in Datacenter — 3 cloud providers
+
+No local network available. All Tang instances are cloud tang-edge on different providers, each behind WAF with IP restriction:
+
+```
+VPS (Fixed IP: x.x.x.x)
+  │
+  ├─── tang-edge on Provider A (WAF → fixed IP only)
+  ├─── tang-edge on Provider B (WAF → fixed IP only)
+  ├─── tang-edge on Provider C (WAF → fixed IP only)
+  │
+  └─── clevis sss: t=2, any 2 of 3 ──► LUKS open
+       + LUKS passphrase slot         ──► fallback
+```
+
+```bash
+clevis luks bind -d /dev/sdX sss '{
+  "t": 2,
+  "pins": {
+    "tang": [
+      {"url": "https://tang.provider-a.example.dev"},
+      {"url": "https://tang.provider-b.example.dev"},
+      {"url": "https://tang.provider-c.example.dev"}
+    ]
+  }
+}'
+```
+
+| Scenario | Result |
+|----------|--------|
+| Server stolen (powered off) | Wrong IP → all 3 reject → **locked** |
+| One provider compromised | 1 share, need 1 more + correct IP → **safe** |
+| One provider down | Other 2 = 2/3 → **unlocks** |
+| Two providers down simultaneously | 1/3 → **password fallback** |
+
+> Three independent providers (e.g. Cloudflare + AWS + Deno Deploy) makes correlated outages virtually impossible.
 
 ### Single Server
 
