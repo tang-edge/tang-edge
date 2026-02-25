@@ -1,6 +1,7 @@
 # tang-edge
 
 [![CI](https://github.com/tang-edge/tang-edge/actions/workflows/ci.yml/badge.svg)](https://github.com/tang-edge/tang-edge/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/tang-edge/tang-edge/actions/workflows/codeql.yml/badge.svg)](https://github.com/tang-edge/tang-edge/actions/workflows/codeql.yml)
 [![Codecov](https://codecov.io/gh/tang-edge/tang-edge/graph/badge.svg)](https://codecov.io/gh/tang-edge/tang-edge)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=tang-edge-org_tang-edge&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=tang-edge-org_tang-edge)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=tang-edge-org_tang-edge&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=tang-edge-org_tang-edge)
@@ -11,7 +12,7 @@
 [![Hono](https://img.shields.io/badge/Hono-E36002?logo=hono&logoColor=white)](https://hono.dev)
 [![Bun](https://img.shields.io/badge/Bun-black?logo=bun&logoColor=white)](https://bun.sh)
 [![Platforms](https://img.shields.io/badge/platforms-8-brightgreen)]()
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12036/badge)](https://www.bestpractices.dev/projects/12036)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12036/badge?level=silver)](https://www.bestpractices.dev/projects/12036)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/tang-edge/tang-edge/badge)](https://scorecard.dev/viewer/?uri=github.com/tang-edge/tang-edge)
 
 Tang server for serverless/edge platforms. Deploy across multiple free providers and use `clevis sss` to distribute trust — no single provider can decrypt your disks.
