@@ -117,6 +117,61 @@ clevis luks bind -d /dev/sdX sss '{
 
 With any setup above, encrypted disk images and LUKS partition dumps can be safely stored on any untrusted remote storage (S3, Backblaze B2, rsync.net, etc.). The backup is just encrypted data — decryption requires the Tang servers responding from the correct IP. Even if the backup storage is fully compromised, the data is unreadable without the Tang key shares.
 
+## Tang + Passphrase (both required)
+
+Standard LUKS passphrase slots are independent from clevis — either tang OR passphrase unlocks the disk. To make both **required together**, clevis SSS supports only `tang` and `tpm2` as pin types; there is no native passphrase pin.
+
+### Option A: Tang + TPM2 with user PIN (recommended)
+
+Requires a machine with a TPM 2.0 chip. The TPM holds one share and requires a user PIN at boot. Tang-edge holds the other share. Both must be present to unlock.
+
+```bash
+clevis luks bind -d /dev/sdX sss '{
+  "t": 2,
+  "pins": {
+    "tang": [{"url": "https://tang-edge.example.dev"}],
+    "tpm2": [{"pcr_bank": "sha256", "pcr_ids": "0,7", "pin": true}]
+  }
+}'
+```
+
+At boot: systemd-cryptsetup contacts tang-edge (network) and prompts for the TPM PIN. Both are needed.
+
+| Scenario | Result |
+|----------|--------|
+| Server stolen (powered off) | No network → tang rejects → **locked** |
+| TPM bypassed but no PIN | 1/2 shares → **locked** |
+| Correct network + correct PIN | 2/2 → **unlocks** |
+| Tang-edge down | TPM alone = 1/2 → **locked** |
+
+**Best for**: laptops, workstations, VMs with virtual TPM.
+
+### Option B: Encrypted keyfile (no TPM required)
+
+Without TPM hardware you can achieve the same effect manually. A LUKS keyfile is encrypted with your passphrase. At unlock you first decrypt the keyfile (passphrase), then use it together with tang-edge.
+
+```bash
+# Setup: generate a keyfile and encrypt it with a passphrase
+dd if=/dev/urandom bs=64 count=1 | base64 > /root/tang.key
+openssl enc -aes-256-cbc -pbkdf2 -in /root/tang.key -out /root/tang.key.enc
+# Add the raw keyfile as a LUKS slot
+cryptsetup luksAddKey /dev/sdX /root/tang.key
+# Remove the raw keyfile — only tang.key.enc remains
+shred -u /root/tang.key
+```
+
+At unlock:
+
+```bash
+# Decrypt keyfile with passphrase, pipe to cryptsetup
+openssl enc -d -aes-256-cbc -pbkdf2 -in /root/tang.key.enc | \
+  cryptsetup luksOpen /dev/sdX root --key-file=-
+```
+
+Store `tang.key.enc` on a separate device or alongside the LUKS header. Without both passphrase + the encrypted keyfile the disk cannot be opened. This approach works without clevis — it is a manual two-step unlock, not suitable for automated boot.
+
+**Best for**: servers where TPM is unavailable and unattended boot is not required.
+
 ## Recommendations
 
 - **Always keep a LUKS passphrase slot** as ultimate fallback
