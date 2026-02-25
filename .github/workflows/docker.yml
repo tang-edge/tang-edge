@@ -15,6 +15,7 @@ jobs:
       packages: write
       id-token: write
       attestations: write
+      security-events: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -51,3 +52,15 @@ jobs:
           subject-name: ghcr.io/tang-edge/tang-edge
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
+
+      - uses: aquasecurity/trivy-action@e368e328979b113139d6f9068e03accaed98a518 # v0.34.1
+        with:
+          image-ref: ghcr.io/tang-edge/tang-edge@${{ steps.build.outputs.digest }}
+          format: sarif
+          output: trivy-results.sarif
+
+      - uses: github/codeql-action/upload-sarif@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy
