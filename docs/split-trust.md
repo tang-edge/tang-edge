@@ -155,20 +155,32 @@ clevis luks bind -d /dev/sdX tang '{"url": "https://tang.corp.example.com"}'
 
 ## Key Rotation Warning
 
-Rotating tang keys via `POST /rotate` replaces the server's private keys. Any existing `clevis` binding created against the old keys will **fail to unlock** after rotation — the LUKS slot becomes permanently inaccessible without the passphrase fallback.
+Rotating tang keys via `POST /rotate` replaces the server's private keys. Any existing `clevis` binding will **fail to unlock** after rotation — the LUKS slot becomes permanently inaccessible without the passphrase fallback.
 
-**Before rotating:**
+**Rotation is an event-driven operation, not a scheduled one.** Tang's security model means the private key alone is useless without the LUKS header — periodic rotation provides little security benefit and creates operational risk.
+
+Rotate only when:
+- KV storage compromise is suspected
+- Admin with `ROTATE_TOKEN` access leaves (corporate deployment)
+- Decommissioning the tang-edge instance
+
+**If you do rotate**, do it while the disk is already unlocked (machine running), never after a reboot:
 
 ```bash
-# 1. Re-bind the disk against the new keys immediately after rotation
-clevis luks unbind -d /dev/sdX -s <slot>
+# 1. Rotate keys on the server
+curl -X POST -H "Authorization: Bearer $TOKEN" https://tang-edge.example.dev/rotate
+
+# 2. Immediately re-bind (disk is currently open — don't reboot before this)
 clevis luks bind -d /dev/sdX tang '{"url": "https://tang-edge.example.dev"}'
 
-# 2. Verify the new binding works before rebooting
-clevis luks unlock -d /dev/sdX
+# 3. Remove the old slot
+clevis luks unbind -d /dev/sdX -s <old_slot>
+
+# 4. Verify, then reboot
+clevis luks list -d /dev/sdX && reboot
 ```
 
-Rotation procedure: rotate → re-bind → verify → reboot to confirm.
+The bigger operational risk is **key loss** (provider deletes your account), not key compromise. See Tang Key Backup below.
 
 ## Tang Key Backup
 
