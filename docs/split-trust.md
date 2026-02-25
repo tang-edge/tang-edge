@@ -134,9 +134,9 @@ clevis luks bind -d /dev/sdX tang '{"url": "https://tang.corp.example.com"}'
 
 | Scenario | Result |
 |----------|--------|
-| At office (corporate network) | tang responds → **auto-unlock** |
-| At home with VPN | VPN IP in allowed pool → tang responds → **auto-unlock** |
-| Laptop lost/stolen, no VPN | tang rejects → **locked** |
+| At office (corporate network, wired) | tang responds → **auto-unlock** |
+| At home (wired ethernet, no VPN needed) | tang responds → **auto-unlock** |
+| Laptop lost/stolen | tang rejects (wrong IP) → **locked** |
 | VPN credentials compromised (no laptop) | No LUKS header → **nothing to decrypt** |
 
 **Kill switch**: disable the tang-edge worker → all laptops lock on next reboot, no MDM required.
@@ -153,9 +153,50 @@ clevis luks bind -d /dev/sdX tang '{"url": "https://tang.corp.example.com"}'
 
 **Best for**: corporate fleets with docking stations, developer laptops on wired home networks.
 
+## Key Rotation Warning
+
+Rotating tang keys via `POST /rotate` replaces the server's private keys. Any existing `clevis` binding will **fail to unlock** after rotation — the LUKS slot becomes permanently inaccessible without the passphrase fallback.
+
+**Rotation is an event-driven operation, not a scheduled one.** Tang's security model means the private key alone is useless without the LUKS header — periodic rotation provides little security benefit and creates operational risk.
+
+Rotate only when:
+- KV storage compromise is suspected
+- Admin with `ROTATE_TOKEN` access leaves (corporate deployment)
+- Decommissioning the tang-edge instance
+
+**If you do rotate**: trigger `POST /rotate` while the disk is already unlocked, then immediately re-bind using `clevis luks bind` before rebooting. See [clevis documentation](https://github.com/latchset/clevis) for the re-binding procedure.
+
+The bigger operational risk is **key loss** (provider deletes your account), not key compromise. See Tang Key Backup below.
+
+## Tang Key Backup
+
+Tang private keys are stored in the provider's KV storage. If the provider account is banned, deleted, or suffers data loss, the keys are gone and the disk **cannot be unlocked** except via passphrase fallback.
+
+**Export keys before any provider changes:**
+
+```bash
+# Fetch the public advertisement (contains public keys only — safe to store anywhere)
+curl https://tang-edge.example.dev/adv | jq . > tang-adv-backup.json
+```
+
+The private keys are not exportable via the API by design (Tang protocol). To back them up, export directly from the provider's KV storage via their dashboard or API before decommissioning.
+
+For production setups: keep at least one LUKS passphrase slot and store it in a password manager or hardware security key.
+
+## Monitoring
+
+Unexpected requests to `/rec/:thp` can indicate a stolen disk being used to attempt unlock:
+
+- Request from an IP outside your known pool at an unusual time
+- Multiple rapid requests in sequence (automated unlock attempt)
+
+Enable WAF logging on `/rec/*` and alert on anomalies. If a theft is suspected, trigger the kill switch immediately: disable the tang-edge worker → disk locks on next reboot.
+
 ## Recommendations
 
 - **Always keep a LUKS passphrase slot** as ultimate fallback
 - **Use different providers** for each tang-edge instance to avoid correlated failures
 - **WAF + Fixed IP** on cloud providers adds a network-level restriction on top of the cryptographic protocol
 - **Password complexity**: the LUKS passphrase should be strong — it's your last line of defense
+- **Re-bind before rotating** tang keys — existing bindings break on rotation
+- **Export KV keys before decommissioning** a provider — they cannot be recovered after deletion
