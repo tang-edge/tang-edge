@@ -2,6 +2,13 @@
 
 Production deployment patterns using `clevis sss` (Shamir's Secret Sharing) to distribute trust across multiple Tang servers. All examples include WAF IP restriction and LUKS passphrase fallback.
 
+| Setup | Best for | Servers needed | Auto-unlock if 1 down | Kill switch |
+|-------|----------|---------------|----------------------|-------------|
+| [2-of-2: Minimal](#2-of-2-minimal-setup) | Max security, VPS | 2 cloud | No → passphrase | Disable either provider |
+| [2-of-3: Homelab](#2-of-3-homelab--on-prem--2-cloud--1-lan) | Homelab, on-prem | 2 cloud + 1 LAN | Yes (2 of 3) | Disable either cloud |
+| [2-of-3: VPS](#2-of-3-vps-in-datacenter--3-cloud-providers) | Remote VPS, no LAN | 3 cloud | Yes (2 of 3) | Disable any provider |
+| [Corporate + VPN](#corporate-laptop--vpn) | Laptops, corp fleet | 1 corp infra | No → passphrase | Disable worker |
+
 ## 2-of-2: Minimal Setup
 
 Simplest split trust setup. Both servers must respond — if either is unavailable, falls back to password.
