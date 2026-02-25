@@ -164,6 +164,10 @@ clevis luks bind -d /dev/sdX sss '{
 
 > Three independent providers (e.g. Cloudflare + AWS + Deno Deploy) makes correlated outages virtually impossible.
 
+#### Offsite Backups
+
+With either setup above, encrypted disk images and LUKS partition dumps can be safely stored on any untrusted remote storage (S3, Backblaze B2, rsync.net, etc.). The backup is just encrypted data — decryption requires 2-of-3 Tang servers responding from the correct IP. Even if the backup storage is fully compromised, the data is unreadable without the Tang key shares.
+
 ### Single Server
 
 ```bash
