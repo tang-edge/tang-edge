@@ -53,3 +53,33 @@ services:
     command: fastly
     environment:
       FASTLY_API_TOKEN: ${FASTLY_API_TOKEN}
+
+  aws:
+    image: ghcr.io/tang-edge/tang-edge:latest
+    command: aws
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-us-east-1}
+      AWS_LAMBDA_FUNCTION_NAME: ${AWS_LAMBDA_FUNCTION_NAME}
+
+  # GCP Cloud Functions — uses official Google Cloud SDK image (gcloud is ~1.5 GB,
+  # not included in the main image). Run `gcloud auth login` locally first.
+  gcp:
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    working_dir: /tang-edge
+    volumes:
+      - .:/tang-edge
+      - ${HOME}/.config/gcloud:/root/.config/gcloud:ro
+    environment:
+      GCP_PROJECT: ${GCP_PROJECT}
+      GCP_REGION: ${GCP_REGION:-europe-west1}
+      ROTATE_TOKEN: ${ROTATE_TOKEN}
+    command: >
+      gcloud functions deploy tang-edge
+        --runtime=nodejs20
+        --trigger-http
+        --allow-unauthenticated
+        --source=/tang-edge
+        --set-env-vars=GCP_PROJECT=${GCP_PROJECT},ROTATE_TOKEN=${ROTATE_TOKEN}
+        --region=${GCP_REGION:-europe-west1}
