@@ -12,7 +12,7 @@
 [![Snyk](https://snyk.io/test/github/tang-edge/tang-edge/badge.svg)](https://snyk.io/test/github/tang-edge/tang-edge)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/tang-edge/tang-edge/badge)](https://scorecard.dev/viewer/?uri=github.com/tang-edge/tang-edge)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12036/badge?level=silver)](https://www.bestpractices.dev/projects/12036)
-[![Platforms](https://img.shields.io/badge/platforms-9-brightgreen)](https://github.com/tang-edge/tang-edge#supported-platforms)
+[![Platforms](https://img.shields.io/badge/platforms-9-brightgreen)](https://github.com/tang-edge/tang-edge?tab=readme-ov-file#supported-platforms)
 
 Tang server for serverless/edge platforms. Deploy across multiple free providers and use `clevis sss` to distribute trust — no single provider can decrypt your disks.
 
