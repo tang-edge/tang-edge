@@ -68,40 +68,36 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           CONTENT=$(base64 -w0 /tmp/snyk-badge.json)
-          SHA=$(gh api repos/tang-edge/tang-edge/git/refs/heads/badges -q '.object.sha' 2>/dev/null || true)
 
           BLOB=$(gh api repos/tang-edge/tang-edge/git/blobs \
             -f content="$CONTENT" -f encoding=base64 -q '.sha')
 
-          if [ -n "$SHA" ]; then
-            TREE=$(gh api repos/tang-edge/tang-edge/git/trees \
-              -f base_tree="$SHA" \
-              -f "tree[][path]=snyk-badge.json" \
-              -f "tree[][mode]=100644" \
-              -f "tree[][type]=blob" \
-              -f "tree[][sha]=$BLOB" \
-              -q '.sha')
-            COMMIT=$(gh api repos/tang-edge/tang-edge/git/commits \
-              -f message="update snyk badge" \
-              -f tree="$TREE" \
-              -f parents[]="$SHA" \
-              -q '.sha')
-          else
-            TREE=$(gh api repos/tang-edge/tang-edge/git/trees \
-              -f "tree[][path]=snyk-badge.json" \
-              -f "tree[][mode]=100644" \
-              -f "tree[][type]=blob" \
-              -f "tree[][sha]=$BLOB" \
-              -q '.sha')
-            COMMIT=$(gh api repos/tang-edge/tang-edge/git/commits \
-              -f message="update snyk badge" \
-              -f tree="$TREE" \
-              -q '.sha')
-          fi
+          TREE=$(gh api repos/tang-edge/tang-edge/git/trees \
+            --method POST \
+            -f "tree[][path]=snyk-badge.json" \
+            -f "tree[][mode]=100644" \
+            -f "tree[][type]=blob" \
+            -f "tree[][sha]=$BLOB" \
+            -q '.sha')
 
-          gh api repos/tang-edge/tang-edge/git/refs/heads/badges \
-            -f sha="$COMMIT" -f force=true \
-            2>/dev/null || \
-          gh api repos/tang-edge/tang-edge/git/refs \
-            -f ref="refs/heads/badges" \
-            -f sha="$COMMIT"
+          PARENT=$(gh api repos/tang-edge/tang-edge/git/refs/heads/badges -q '.object.sha' 2>/dev/null || true)
+
+          if [ -n "$PARENT" ]; then
+            COMMIT=$(gh api repos/tang-edge/tang-edge/git/commits \
+              -f message="update snyk badge" \
+              -f tree="$TREE" \
+              -f "parents[]=$PARENT" \
+              -q '.sha')
+            gh api repos/tang-edge/tang-edge/git/refs/heads/badges \
+              --method PATCH \
+              -f sha="$COMMIT" \
+              -F force=true
+          else
+            COMMIT=$(gh api repos/tang-edge/tang-edge/git/commits \
+              -f message="update snyk badge" \
+              -f tree="$TREE" \
+              -q '.sha')
+            gh api repos/tang-edge/tang-edge/git/refs \
+              -f ref="refs/heads/badges" \
+              -f sha="$COMMIT"
+          fi
