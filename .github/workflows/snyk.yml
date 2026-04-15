@@ -64,12 +64,44 @@ jobs:
             "$MESSAGE" "$COLOR" > /tmp/snyk-badge.json
 
       - name: Push badge to badges branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout --orphan badges
-          git rm -rf . 2>/dev/null || true
-          cp /tmp/snyk-badge.json snyk-badge.json
-          git add snyk-badge.json
-          git commit -m "update snyk badge" --allow-empty
-          git push -f origin badges
+          CONTENT=$(base64 -w0 /tmp/snyk-badge.json)
+          SHA=$(gh api repos/tang-edge/tang-edge/git/refs/heads/badges -q '.object.sha' 2>/dev/null || true)
+
+          BLOB=$(gh api repos/tang-edge/tang-edge/git/blobs \
+            -f content="$CONTENT" -f encoding=base64 -q '.sha')
+
+          if [ -n "$SHA" ]; then
+            TREE=$(gh api repos/tang-edge/tang-edge/git/trees \
+              -f base_tree="$SHA" \
+              -f "tree[][path]=snyk-badge.json" \
+              -f "tree[][mode]=100644" \
+              -f "tree[][type]=blob" \
+              -f "tree[][sha]=$BLOB" \
+              -q '.sha')
+            COMMIT=$(gh api repos/tang-edge/tang-edge/git/commits \
+              -f message="update snyk badge" \
+              -f tree="$TREE" \
+              -f parents[]="$SHA" \
+              -q '.sha')
+          else
+            TREE=$(gh api repos/tang-edge/tang-edge/git/trees \
+              -f "tree[][path]=snyk-badge.json" \
+              -f "tree[][mode]=100644" \
+              -f "tree[][type]=blob" \
+              -f "tree[][sha]=$BLOB" \
+              -q '.sha')
+            COMMIT=$(gh api repos/tang-edge/tang-edge/git/commits \
+              -f message="update snyk badge" \
+              -f tree="$TREE" \
+              -q '.sha')
+          fi
+
+          gh api repos/tang-edge/tang-edge/git/refs/heads/badges \
+            -f sha="$COMMIT" -f force=true \
+            2>/dev/null || \
+          gh api repos/tang-edge/tang-edge/git/refs \
+            -f ref="refs/heads/badges" \
+            -f sha="$COMMIT"
