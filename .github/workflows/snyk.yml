@@ -7,12 +7,13 @@ on:
     - cron: "0 4 * * 1" # Weekly Monday 4am UTC
   workflow_dispatch:
 
-permissions:
-  contents: write
+permissions: {}
 
 jobs:
   snyk:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -68,19 +69,29 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           CONTENT=$(base64 -w0 /tmp/snyk-badge.json)
-          SHA=$(gh api repos/tang-edge/tang-edge/contents/snyk-badge.json?ref=badges -q '.sha' 2>/dev/null || true)
 
-          if [ -n "$SHA" ]; then
-            gh api repos/tang-edge/tang-edge/contents/snyk-badge.json \
-              --method PUT \
-              -f message="update snyk badge" \
-              -f content="$CONTENT" \
-              -f sha="$SHA" \
-              -f branch="badges"
-          else
-            gh api repos/tang-edge/tang-edge/contents/snyk-badge.json \
-              --method PUT \
-              -f message="update snyk badge" \
-              -f content="$CONTENT" \
-              -f branch="badges"
+          if ! gh api repos/tang-edge/tang-edge/branches/badges -q '.name' >/dev/null 2>&1; then
+            BASE_SHA=$(gh api repos/tang-edge/tang-edge/git/refs/heads/main -q '.object.sha')
+            EMPTY_TREE=$(gh api repos/tang-edge/tang-edge/git/trees --method POST -q '.sha')
+            INITIAL=$(gh api repos/tang-edge/tang-edge/git/commits \
+              -f message="init badges branch" \
+              -f tree="$EMPTY_TREE" \
+              -q '.sha')
+            gh api repos/tang-edge/tang-edge/git/refs \
+              -f ref="refs/heads/badges" \
+              -f sha="$INITIAL"
           fi
+
+          FILE_SHA=$(gh api "repos/tang-edge/tang-edge/contents/snyk-badge.json?ref=badges" -q '.sha' 2>/dev/null || true)
+
+          ARGS=(
+            repos/tang-edge/tang-edge/contents/snyk-badge.json
+            --method PUT
+            -f message="update snyk badge"
+            -f content="$CONTENT"
+            -f branch="badges"
+          )
+          if [ -n "$FILE_SHA" ]; then
+            ARGS+=(-f sha="$FILE_SHA")
+          fi
+          gh api "${ARGS[@]}"
