@@ -68,36 +68,19 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           CONTENT=$(base64 -w0 /tmp/snyk-badge.json)
+          SHA=$(gh api repos/tang-edge/tang-edge/contents/snyk-badge.json?ref=badges -q '.sha' 2>/dev/null || true)
 
-          BLOB=$(gh api repos/tang-edge/tang-edge/git/blobs \
-            -f content="$CONTENT" -f encoding=base64 -q '.sha')
-
-          TREE=$(gh api repos/tang-edge/tang-edge/git/trees \
-            --method POST \
-            -f "tree[][path]=snyk-badge.json" \
-            -f "tree[][mode]=100644" \
-            -f "tree[][type]=blob" \
-            -f "tree[][sha]=$BLOB" \
-            -q '.sha')
-
-          PARENT=$(gh api repos/tang-edge/tang-edge/git/refs/heads/badges -q '.object.sha' 2>/dev/null || true)
-
-          if [ -n "$PARENT" ]; then
-            COMMIT=$(gh api repos/tang-edge/tang-edge/git/commits \
+          if [ -n "$SHA" ]; then
+            gh api repos/tang-edge/tang-edge/contents/snyk-badge.json \
+              --method PUT \
               -f message="update snyk badge" \
-              -f tree="$TREE" \
-              -f "parents[]=$PARENT" \
-              -q '.sha')
-            gh api repos/tang-edge/tang-edge/git/refs/heads/badges \
-              --method PATCH \
-              -f sha="$COMMIT" \
-              -F force=true
+              -f content="$CONTENT" \
+              -f sha="$SHA" \
+              -f branch="badges"
           else
-            COMMIT=$(gh api repos/tang-edge/tang-edge/git/commits \
+            gh api repos/tang-edge/tang-edge/contents/snyk-badge.json \
+              --method PUT \
               -f message="update snyk badge" \
-              -f tree="$TREE" \
-              -q '.sha')
-            gh api repos/tang-edge/tang-edge/git/refs \
-              -f ref="refs/heads/badges" \
-              -f sha="$COMMIT"
+              -f content="$CONTENT" \
+              -f branch="badges"
           fi
