@@ -68,25 +68,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          CONTENT=$(base64 -w0 /tmp/snyk-badge.json)
-
-          if ! gh api repos/tang-edge/tang-edge/branches/badges -q '.name' >/dev/null 2>&1; then
-            MAIN_SHA=$(gh api repos/tang-edge/tang-edge/git/refs/heads/main -q '.object.sha')
-            gh api repos/tang-edge/tang-edge/git/refs \
-              -f ref="refs/heads/badges" \
-              -f sha="$MAIN_SHA"
-          fi
-
-          FILE_SHA=$(gh api "repos/tang-edge/tang-edge/contents/snyk-badge.json?ref=badges" -q '.sha' 2>/dev/null || true)
-
-          ARGS=(
-            repos/tang-edge/tang-edge/contents/snyk-badge.json
-            --method PUT
-            -f message="update snyk badge"
-            -f content="$CONTENT"
-            -f branch="badges"
-          )
-          if [ -n "$FILE_SHA" ]; then
-            ARGS+=(-f sha="$FILE_SHA")
-          fi
-          gh api "${ARGS[@]}"
+          cd /tmp
+          git init badges-repo
+          cd badges-repo
+          git checkout --orphan badges
+          cp /tmp/snyk-badge.json snyk-badge.json
+          git add snyk-badge.json
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "update snyk badge"
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/tang-edge/tang-edge.git"
+          git push -f origin badges
