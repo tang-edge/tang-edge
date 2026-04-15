@@ -1,0 +1,75 @@
+name: Snyk
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 4 * * 1" # Weekly Monday 4am UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run Snyk monitor
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: monitor
+          args: --org=tang-edge-worker --project-name=tang-edge
+
+      - name: Run Snyk test
+        id: snyk_test
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
+          args: --org=tang-edge-worker --project-name=tang-edge --json-file-output=/tmp/snyk-result.json
+        continue-on-error: true
+
+      - name: Generate badge data
+        run: |
+          if [ "${{ steps.snyk_test.outcome }}" = "success" ]; then
+            COLOR="brightgreen"
+            MESSAGE="0 vulnerabilities"
+          elif [ -f /tmp/snyk-result.json ]; then
+            COUNT=$(jq '.uniqueCount // 0' /tmp/snyk-result.json 2>/dev/null || echo "0")
+            if [ "$COUNT" = "0" ]; then
+              COLOR="brightgreen"
+              MESSAGE="0 vulnerabilities"
+            else
+              COLOR="red"
+              MESSAGE="${COUNT} vulnerabilities"
+            fi
+          else
+            COLOR="yellow"
+            MESSAGE="check results"
+          fi
+
+          printf '{"schemaVersion":1,"label":"Snyk","message":"%s","color":"%s"}\n' \
+            "$MESSAGE" "$COLOR" > /tmp/snyk-badge.json
+
+      - name: Push badge to badges branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan badges
+          git rm -rf . 2>/dev/null || true
+          cp /tmp/snyk-badge.json snyk-badge.json
+          git add snyk-badge.json
+          git commit -m "update snyk badge" --allow-empty
+          git push -f origin badges
