@@ -5,8 +5,8 @@
 FROM oven/bun:1@sha256:856da45d07aeb62eb38ea3e7f9e1794c0143a4ff63efb00e6c4491b627e2a521
 
 ARG TARGETARCH
-ARG DENO_VERSION=v2.7.1
-ARG FASTLY_VERSION=v14.0.1
+ARG DENO_VERSION=v2.7.12
+ARG FASTLY_VERSION=v14.3.1
 
 # System deps (ca-certificates required for curl HTTPS downloads)
 RUN apt-get update && apt-get install -y --no-install-recommends \
