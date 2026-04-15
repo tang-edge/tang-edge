@@ -9,7 +9,7 @@
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=tang-edge-org_tang-edge&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=tang-edge-org_tang-edge)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=tang-edge-org_tang-edge&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=tang-edge-org_tang-edge)
 [![Maintainability](https://sonarcloud.io/api/project_badges/measure?project=tang-edge-org_tang-edge&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=tang-edge-org_tang-edge)
-[![Snyk](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/tang-edge/tang-edge/snyk-badge/snyk-badge.json)](https://app.snyk.io/org/tang-edge-worker/projects)
+[![Snyk](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/tang-edge/tang-edge/snyk-badge/snyk-badge.json&cacheSeconds=3600)](https://app.snyk.io/org/tang-edge-worker/projects)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/tang-edge/tang-edge/badge)](https://scorecard.dev/viewer/?uri=github.com/tang-edge/tang-edge)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12036/badge?level=silver)](https://www.bestpractices.dev/projects/12036)
 [![Platforms](https://img.shields.io/badge/platforms-9-brightgreen)](https://github.com/tang-edge/tang-edge?tab=readme-ov-file#supported-platforms)
