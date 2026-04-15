@@ -71,11 +71,11 @@ jobs:
           cd /tmp
           git init badges-repo
           cd badges-repo
-          git checkout --orphan badges
+          git checkout --orphan snyk-badge
           cp /tmp/snyk-badge.json snyk-badge.json
           git add snyk-badge.json
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git commit -m "update snyk badge"
           git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/tang-edge/tang-edge.git"
-          git push -f origin badges
+          git push -f origin snyk-badge
