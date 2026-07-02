@@ -39,7 +39,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: test
-          args: --org=tang-edge-worker --project-name=tang-edge --json-file-output=/tmp/snyk-result.json
+          args: --org=tang-edge-worker --project-name=tang-edge --json-file-output=snyk-result.json
         continue-on-error: true
 
       - name: Generate badge data
@@ -47,8 +47,8 @@ jobs:
           if [ "${{ steps.snyk_test.outcome }}" = "success" ]; then
             COLOR="brightgreen"
             MESSAGE="0 vulnerabilities"
-          elif [ -f /tmp/snyk-result.json ]; then
-            COUNT=$(jq '.uniqueCount // 0' /tmp/snyk-result.json 2>/dev/null || echo "0")
+          elif [ -f snyk-result.json ]; then
+            COUNT=$(jq '.uniqueCount // 0' snyk-result.json 2>/dev/null || echo "0")
             if [ "$COUNT" = "0" ]; then
               COLOR="brightgreen"
               MESSAGE="0 vulnerabilities"
