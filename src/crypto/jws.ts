@@ -52,5 +52,5 @@ async function es512Sign(key: ECPrivateJWK, data: Uint8Array): Promise<Uint8Arra
   while (dHex.length < 132) dHex = "00" + dHex;
   const dBytes = new Uint8Array(dHex.match(/.{2}/g)!.map((b) => Number.parseInt(b, 16)));
 
-  return p521.sign(new Uint8Array(hash), dBytes);
+  return p521.sign(new Uint8Array(hash), dBytes, { prehash: false });
 }

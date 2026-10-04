@@ -79,7 +79,7 @@ describe("signAdvertisement", () => {
     expect(sigBytes.length).toBe(132); // r (66) + s (66)
   });
 
-  it("signature can be verified with noble/curves", async () => {
+  it("signature verifies under WebCrypto ECDSA P-521 / SHA-512", async () => {
     const sigKey = generateSigningKey();
     const excKey = generateExchangeKey();
 
@@ -88,16 +88,40 @@ describe("signAdvertisement", () => {
       [sigKey],
     );
 
-    // Reconstruct the signed input
+    const sigInput = new TextEncoder().encode(
+      `${jws.signatures[0].protected}.${jws.payload}`,
+    );
+    const sigBytes = base64urlDecode(jws.signatures[0].signature);
+
+    const pub = jwkPublic(sigKey);
+    const key = await crypto.subtle.importKey(
+      "jwk",
+      { kty: pub.kty, crv: pub.crv, x: pub.x, y: pub.y },
+      { name: "ECDSA", namedCurve: "P-521" },
+      false,
+      ["verify"],
+    );
+
+    const valid = await crypto.subtle.verify(
+      { name: "ECDSA", hash: "SHA-512" },
+      key,
+      sigBytes,
+      sigInput,
+    );
+    expect(valid).toBe(true);
+  });
+
+  it("signature verifies with noble/curves over a single SHA-512 digest", async () => {
+    const sigKey = generateSigningKey();
+
+    const jws = await signAdvertisement([jwkPublic(sigKey)], [sigKey]);
+
     const sigInput = new TextEncoder().encode(
       `${jws.signatures[0].protected}.${jws.payload}`,
     );
     const hash = await crypto.subtle.digest("SHA-512", sigInput);
-
-    // Decode signature (compact r || s format, 132 bytes)
     const sigBytes = base64urlDecode(jws.signatures[0].signature);
 
-    // Get public key as uncompressed bytes
     const pubX = base64urlToBigint(sigKey.x);
     const pubY = base64urlToBigint(sigKey.y);
 
@@ -108,8 +132,7 @@ describe("signAdvertisement", () => {
     const pubHex = "04" + xHex + yHex;
     const pubBytes = new Uint8Array(pubHex.match(/.{2}/g)!.map((b) => parseInt(b, 16)));
 
-    // Verify directly with raw bytes
-    const valid = p521.verify(sigBytes, new Uint8Array(hash), pubBytes);
+    const valid = p521.verify(sigBytes, new Uint8Array(hash), pubBytes, { prehash: false });
     expect(valid).toBe(true);
   });
 });
