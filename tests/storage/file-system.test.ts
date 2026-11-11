@@ -73,6 +73,15 @@ describe("FileSystemStorage", () => {
     await expect(storage.get("key\0.jwk")).rejects.toThrow("Invalid key");
   });
 
+  it("rejects absolute paths outside the directory", async () => {
+    await expect(storage.get("/etc/passwd")).rejects.toThrow("Path traversal detected");
+  });
+
+  it("list returns empty when the directory is missing", async () => {
+    const missing = new FileSystemStorage(join(dir, "missing"));
+    expect((await missing.list()).keys).toEqual([]);
+  });
+
   it("works with kv-store functions", async () => {
     const { saveKey, loadKeys, rotateKey } = await import(
       "../../src/storage/kv-store"
