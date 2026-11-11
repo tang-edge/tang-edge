@@ -1,15 +1,23 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Copyright (c) tang-edge contributors
 
-import { mock, beforeEach } from "bun:test";
+import { mock, beforeEach, describe, it, expect } from "bun:test";
 import { runAdapterTests } from "./adapter-shared";
 
 const store = new Map<string, string>();
+const FAILING_KEY = "failing.jwk";
+
+function serverError() {
+  const err: any = new Error("Server error");
+  err.statusCode = 500;
+  return err;
+}
 
 mock.module("@azure/data-tables", () => ({
   TableClient: {
     fromConnectionString: () => ({
       getEntity: async (_pk: string, key: string) => {
+        if (key === FAILING_KEY) throw serverError();
         if (!store.has(key)) {
           const err: any = new Error("Not found");
           err.statusCode = 404;
@@ -21,6 +29,7 @@ mock.module("@azure/data-tables", () => ({
         store.set(entity.rowKey, entity.value);
       },
       deleteEntity: async (_pk: string, key: string) => {
+        if (key === FAILING_KEY) throw serverError();
         if (!store.has(key)) {
           const err: any = new Error("Not found");
           err.statusCode = 404;
@@ -47,3 +56,15 @@ runAdapterTests(
   "AzureTableStorage",
   () => new AzureTableStorage("DefaultEndpointsProtocol=https;AccountName=test"),
 );
+
+describe("AzureTableStorage errors", () => {
+  const storage = new AzureTableStorage("DefaultEndpointsProtocol=https;AccountName=test");
+
+  it("get rethrows non-404 errors", async () => {
+    await expect(storage.get(FAILING_KEY)).rejects.toThrow("Server error");
+  });
+
+  it("delete rethrows non-404 errors", async () => {
+    await expect(storage.delete(FAILING_KEY)).rejects.toThrow("Server error");
+  });
+});
