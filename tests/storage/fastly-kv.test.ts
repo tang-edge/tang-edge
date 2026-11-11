@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Copyright (c) tang-edge contributors
 
+import { describe, it, expect } from "bun:test";
 import { runAdapterTests } from "./adapter-shared";
 import { FastlyKVStorage } from "../../src/storage/adapters/fastly-kv";
 
@@ -25,4 +26,13 @@ function createMockKVStore() {
 runAdapterTests("FastlyKVStorage", () => {
   const mock = createMockKVStore();
   return new FastlyKVStorage(mock);
+});
+
+describe("FastlyKVStorage index", () => {
+  it("treats a corrupt index as empty", async () => {
+    const mock = createMockKVStore();
+    await mock.put("__index__", "not json");
+    const result = await new FastlyKVStorage(mock).list();
+    expect(result.keys).toEqual([]);
+  });
 });
